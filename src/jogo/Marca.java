@@ -1,5 +1,6 @@
 package jogo;
 
+// Value object que representa 'X' ou 'O'.
 public class Marca
 {
     private char simbolo;
@@ -15,6 +16,8 @@ public class Marca
     {
         return this.simbolo;
     }
+
+    // === Object ===
 
     @Override
     public String toString ()

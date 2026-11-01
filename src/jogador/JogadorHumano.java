@@ -5,6 +5,7 @@ import jogo.Tabuleiro;
 import java.io.*;
 import java.util.Objects;
 
+// Jogador controlado pelo usuário via teclado.
 public class JogadorHumano implements Jogador, Cloneable
 {
     private Marca          marca     = null;
@@ -12,7 +13,7 @@ public class JogadorHumano implements Jogador, Cloneable
     private BufferedReader teclado   = new BufferedReader
                                         (new InputStreamReader (System.in));
 
-    // =================== CONSTRUTORES ===================
+    // === Construtores ===
 
     public JogadorHumano (Tabuleiro tab) throws Exception
     {
@@ -34,7 +35,7 @@ public class JogadorHumano implements Jogador, Cloneable
         this.marca     = mrc;
     }
 
-    // =================== CONTRATO Jogador ===================
+    // === Contrato Jogador ===
 
     public Marca getMarca ()
     {
@@ -66,51 +67,35 @@ public class JogadorHumano implements Jogador, Cloneable
         }
     }
 
-    /**
-     * Lê EXATAMENTE um dígito (0, 1 ou 2). Rejeita:
-     *  - strings vazias ("")
-     *  - strings com mais de 1 caractere ("00", "002", "000001")
-     *  - caracteres não numéricos ("a", "x", "-1")
-     *  - dígitos fora do intervalo 0-2 ("3", "9")
-     */
+    // === Validação de entrada ===
+
+    // Aceita exatamente um dígito entre '0' e '2'.
     private int leDigito (String prompt) throws Exception
     {
         System.out.print(prompt);
         String entrada = teclado.readLine();
 
-        if (entrada == null)
-            throw new Exception("Nenhum caractere digitado");
+        if (entrada == null)  throw new Exception("Nenhum caractere digitado");
 
         String s = entrada.trim();
-
-        if (s.isEmpty())
-            throw new Exception("Nenhum caractere digitado");
-
-        if (s.length() != 1)
-            throw new Exception("Digite APENAS um caractere (0, 1 ou 2)");
+        if (s.isEmpty())      throw new Exception("Nenhum caractere digitado");
+        if (s.length() != 1)  throw new Exception("Digite APENAS um caractere (0, 1 ou 2)");
 
         char c = s.charAt(0);
         if (c < '0' || c > '2')
             throw new Exception("Apenas 0, 1 ou 2 são aceitos");
 
-        return c - '0';   // '0'→0, '1'→1, '2'→2
+        return c - '0';
     }
 
-    // =================== MENSAGENS DE FIM DE JOGO ===================
+    // === Mensagens de fim de jogo ===
 
     public void vcGanhou () { System.out.println("Você ganhou!"); }
     public void vcPerdeu () { System.out.println("Você perdeu!"); }
     public void deuVelha () { System.out.println("Deu velha! Empate."); }
 
-    // =================== REPETIÇÃO DE PARTIDA ===================
+    // === Repetição de partida ===
 
-    /**
-     * Pergunta se o jogador quer jogar novamente. Aceita EXATAMENTE:
-     *  - 's' ou 'S'  → true
-     *  - 'n' ou 'N'  → false
-     * Qualquer outra entrada (inclusive "sim", "nao", "não", "ssss", "")
-     * é rejeitada e a pergunta é repetida.
-     */
     public boolean querMaisUmaPartida ()
     {
         while (true)
@@ -129,36 +114,26 @@ public class JogadorHumano implements Jogador, Cloneable
         }
     }
 
-    /**
-     * Lê EXATAMENTE um caractere e o devolve em minúsculo.
-     * Aceita somente 's', 'S', 'n' ou 'N'.
-     * Lança exceção para qualquer outra coisa.
-     */
+    // Aceita exatamente 's' ou 'n' (case-insensitive).
     private char leSimNao (String prompt) throws Exception
     {
         System.out.print(prompt);
         String entrada = teclado.readLine();
 
-        if (entrada == null)
-            throw new Exception("Nenhum caractere digitado");
+        if (entrada == null)  throw new Exception("Nenhum caractere digitado");
 
         String s = entrada.trim();
-
-        if (s.isEmpty())
-            throw new Exception("Nenhum caractere digitado");
-
-        if (s.length() != 1)
-            throw new Exception("Digite APENAS um caractere (s ou n)");
+        if (s.isEmpty())      throw new Exception("Nenhum caractere digitado");
+        if (s.length() != 1)  throw new Exception("Digite APENAS um caractere (s ou n)");
 
         char c = Character.toLowerCase(s.charAt(0));
-
         if (c != 's' && c != 'n')
             throw new Exception("Apenas 's' ou 'n' são aceitos");
 
         return c;
     }
 
-    // =================== OBJECT ===================
+    // === Object ===
 
     @Override
     public String toString ()
@@ -182,7 +157,7 @@ public class JogadorHumano implements Jogador, Cloneable
         return Objects.hash(this.marca, this.tabDoJogo);
     }
 
-    // =================== CÓPIA ===================
+    // === Cópia ===
 
     public JogadorHumano (JogadorHumano modelo) throws Exception
     {

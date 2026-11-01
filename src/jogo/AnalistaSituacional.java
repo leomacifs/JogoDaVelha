@@ -2,15 +2,20 @@ package jogo;
 
 import java.util.Objects;
 
+// Avalia o tabuleiro: detecta vencedor e fim de jogo.
 public class AnalistaSituacional
 {
     private Tabuleiro tabDoJogo;
+
+    // === Construtor ===
 
     public AnalistaSituacional (Tabuleiro tab) throws Exception
     {
         if (tab == null) throw new Exception("Tabuleiro não pode ser nulo");
         this.tabDoJogo = tab;
     }
+
+    // === Detecção de vencedor ===
 
     public Marca getMarcaDoVencedor ()
     {
@@ -32,21 +37,22 @@ public class AnalistaSituacional
                 Marca c = tabDoJogo.getMarcaNaPosicao(2, j);
                 if (a != null && a.equals(b) && b.equals(c)) return a;
             }
-            // diagonal principal
+            // diagonais
             Marca d0 = tabDoJogo.getMarcaNaPosicao(0, 0);
             Marca d1 = tabDoJogo.getMarcaNaPosicao(1, 1);
             Marca d2 = tabDoJogo.getMarcaNaPosicao(2, 2);
             if (d0 != null && d0.equals(d1) && d1.equals(d2)) return d0;
 
-            // diagonal secundária
             Marca s0 = tabDoJogo.getMarcaNaPosicao(0, 2);
             Marca s1 = tabDoJogo.getMarcaNaPosicao(1, 1);
             Marca s2 = tabDoJogo.getMarcaNaPosicao(2, 0);
             if (s0 != null && s0.equals(s1) && s1.equals(s2)) return s0;
         }
-        catch (Exception e) { /* posições são sempre válidas aqui */ }
+        catch (Exception e) { /* posições sempre válidas */ }
         return null;
     }
+
+    // === Tabuleiro cheio ===
 
     private boolean tabuleiroCheio ()
     {
@@ -58,10 +64,14 @@ public class AnalistaSituacional
         } catch (Exception e) { return true; }
     }
 
+    // === Fim de jogo ===
+
     public boolean fimDeJogo ()
     {
         return getMarcaDoVencedor() != null || tabuleiroCheio();
     }
+
+    // === Object ===
 
     @Override
     public String toString ()

@@ -2,6 +2,7 @@ import jogo.*;
 import jogador.*;
 import java.io.*;
 
+// Ponto de entrada e controlador do jogo.
 public class Velha
 {
     public static void main (String args [])
@@ -16,10 +17,12 @@ public class Velha
 
         boolean jogadorHumanoComeca = (int)(Math.random()*2) == 0;
 
+        // Loop externo: repete partidas enquanto o usuário quiser.
         do
         {
             try
             {
+                // Setup da partida.
                 tabDoJogo = new Tabuleiro ();
 
                 if (jogadorHumanoComeca)
@@ -39,37 +42,34 @@ public class Velha
 
                 analista = new AnalistaSituacional (tabDoJogo);
 
-                if (jogadorHumanoComeca)
-                    jogador=jogadorH;
-                else
-                    jogador=jogadorA;
+                // Loop interno: alterna turnos até o fim de jogo.
+                jogador = jogadorHumanoComeca ? jogadorH : jogadorA;
 
                 do
                 {
                     jogador.facaSuaJogada();
 
-                    if (jogador==jogadorH)
-                        jogador=jogadorA;
+                    if (jogador == jogadorH)
+                        jogador = jogadorA;
                     else
-                        jogador=jogadorH;
+                        jogador = jogadorH;
                 }
                 while (!analista.fimDeJogo());
 
-                //FIX: armazena o vencedor numa variável ANTES de chamar .equals()
+                // Resultado da partida.
                 Marca vencedor = analista.getMarcaDoVencedor();
 
                 if (vencedor == null)
-                    jogadorH.deuVelha ();          // empate
+                    jogadorH.deuVelha ();
                 else if (vencedor.equals(jogadorH.getMarca()))
-                    jogadorH.vcGanhou ();          // humano venceu
+                    jogadorH.vcGanhou ();
                 else
-                    jogadorH.vcPerdeu ();          // IA venceu
+                    jogadorH.vcPerdeu ();
 
                 jogadorHumanoComeca = !jogadorHumanoComeca;
             }
             catch (Exception e)
             {
-                //FIX: não engolir exceção silenciosamente
                 System.out.println ("Erro inesperado: " + e.getMessage ());
             }
         }
