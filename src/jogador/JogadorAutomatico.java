@@ -4,10 +4,13 @@ import jogo.Marca;
 import jogo.Tabuleiro;
 import java.util.Objects;
 
+// IA com heurísticas: ganhar → bloquear → futuro → qualquer lugar.
 public class JogadorAutomatico implements Jogador, Cloneable
 {
     private Marca     marca     = null;
     private Tabuleiro tabDoJogo = null;
+
+    // === Construtores ===
 
     public JogadorAutomatico (Tabuleiro tab) throws Exception
     {
@@ -25,9 +28,9 @@ public class JogadorAutomatico implements Jogador, Cloneable
         this.marca     = mrc;
     }
 
-    public Marca getMarca () { return this.marca; }
+    // === Contrato Jogador ===
 
-    // =================== ESTRATÉGIA ===================
+    public Marca getMarca () { return this.marca; }
 
     public void facaSuaJogada ()
     {
@@ -41,6 +44,8 @@ public class JogadorAutomatico implements Jogador, Cloneable
         catch (Exception e) { /* posições validadas internamente */ }
     }
 
+    // === Heurísticas ===
+
     private boolean tentaGanhar () throws Exception
     {
         return tentaCompletar(this.marca);
@@ -52,11 +57,7 @@ public class JogadorAutomatico implements Jogador, Cloneable
         return tentaCompletar(oponente);
     }
 
-    /**
-     * Procura um trio (linha, coluna ou diagonal) com 2 marcas de "alvo"
-     * e 1 posição vazia. Se encontrar, joga a marca PRÓPRIA na posição
-     * vazia (assim ganha se alvo==this.marca; bloqueia se alvo==oponente).
-     */
+    // Completa trio com 2 marcas de 'alvo' + 1 vazio.
     private boolean tentaCompletar (Marca alvo) throws Exception
     {
         int[][][] trios = todosOsTrios();
@@ -72,7 +73,7 @@ public class JogadorAutomatico implements Jogador, Cloneable
                     if (tabDoJogo.getMarcaNaPosicao(p[0], p[1]).equals(alvo))
                         marcasAlvo++;
                     else
-                        marcasAlvo = -100; // tem marca do outro: inviável
+                        marcasAlvo = -100;
                 }
                 else
                 {
@@ -90,10 +91,7 @@ public class JogadorAutomatico implements Jogador, Cloneable
         return false;
     }
 
-    /**
-     * "Jogada de futuro": trio com exatamente 1 marca própria, 0 do
-     * oponente e 2 vazios. Coloca a marca em um dos vazios.
-     */
+    // Trio com 1 marca própria, 0 do oponente e 2 vazios.
     private boolean tentaJogadaDeFuturo () throws Exception
     {
         int[][][] trios = todosOsTrios();
@@ -127,6 +125,7 @@ public class JogadorAutomatico implements Jogador, Cloneable
         return false;
     }
 
+    // Fallback: primeira posição livre.
     private void jogaEmQualquerLugar () throws Exception
     {
         for (int i = 0; i < 3; i++)
@@ -138,20 +137,17 @@ public class JogadorAutomatico implements Jogador, Cloneable
                 }
     }
 
-    /** Retorna os 8 trios possíveis do tabuleiro. */
+    // Lista dos 8 trios vencedores.
     private int[][][] todosOsTrios ()
     {
         return new int[][][] {
-            // linhas
             {{0,0},{0,1},{0,2}}, {{1,0},{1,1},{1,2}}, {{2,0},{2,1},{2,2}},
-            // colunas
             {{0,0},{1,0},{2,0}}, {{0,1},{1,1},{2,1}}, {{0,2},{1,2},{2,2}},
-            // diagonais
             {{0,0},{1,1},{2,2}}, {{0,2},{1,1},{2,0}}
         };
     }
 
-    // =================== OBJECT ===================
+    // === Object ===
 
     @Override
     public String toString ()
@@ -174,6 +170,8 @@ public class JogadorAutomatico implements Jogador, Cloneable
     {
         return Objects.hash(this.marca, this.tabDoJogo);
     }
+
+    // === Cópia ===
 
     public JogadorAutomatico (JogadorAutomatico modelo) throws Exception
     {

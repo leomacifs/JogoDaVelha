@@ -1,22 +1,28 @@
 package jogo;
 
 import java.util.Arrays;
-import java.util.Objects;
 
+// Matriz 3x3 que guarda as Marcas (null = vazio).
 public class Tabuleiro implements Cloneable
 {
     private Marca matriz[][];
+
+    // === Construtor ===
 
     public Tabuleiro ()
     {
         this.matriz = new Marca[3][3];
     }
 
+    // === Validação ===
+
     private void validaPosicao (int lin, int col) throws Exception
     {
         if (lin < 0 || lin > 2 || col < 0 || col > 2)
             throw new Exception("Posição inválida: [" + lin + "][" + col + "]");
     }
+
+    // === Leitura / escrita ===
 
     public boolean haMarcaNaPosicao (int lin, int col) throws Exception
     {
@@ -39,6 +45,8 @@ public class Tabuleiro implements Cloneable
             throw new Exception("Posição já ocupada");
         this.matriz[lin][col] = mrc;
     }
+
+    // === Object ===
 
     @Override
     public String toString ()
@@ -72,6 +80,8 @@ public class Tabuleiro implements Cloneable
         return Arrays.deepHashCode(this.matriz);
     }
 
+    // === Cópia ===
+
     public Tabuleiro (Tabuleiro modelo) throws Exception
     {
         if (modelo == null)
@@ -86,10 +96,7 @@ public class Tabuleiro implements Cloneable
     @Override
     public Object clone ()
     {
-        try {
-            return new Tabuleiro(this);
-        } catch (Exception e) {
-            return null;
-        }
+        try { return new Tabuleiro(this); }
+        catch (Exception e) { return null; }
     }
 }
