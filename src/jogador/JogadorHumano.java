@@ -3,91 +3,117 @@
 import jogo.Marca;
 import jogo.Tabuleiro;
 import java.io.*;
+import java.util.Objects;
 
 public class JogadorHumano implements Jogador, Cloneable
 {
     private Marca          marca     = null;
     private Tabuleiro      tabDoJogo = null;
     private BufferedReader teclado   = new BufferedReader
-                                        (new InputStreamReader
-                                        (System.in));
+                                        (new InputStreamReader (System.in));
 
     public JogadorHumano (Tabuleiro tab) throws Exception
     {
-        // atribuir tab para tabDoJogo
-        // pedir para o jogador escolher
-        // sua marca e permitir digitacao
-        // intanciando marca
+        if (tab == null) throw new Exception("Tabuleiro não pode ser nulo");
+        this.tabDoJogo = tab;
+
+        System.out.print("Escolha sua marca (X/O): ");
+        String entrada = teclado.readLine();
+        if (entrada == null || entrada.isEmpty())
+            throw new Exception("Nenhuma marca digitada");
+        this.marca = new Marca(Character.toUpperCase(entrada.charAt(0)));
     }
 
     public JogadorHumano (Tabuleiro tab, Marca mrc) throws Exception
     {
-        // atribuir tab para tabDoJogo
-        // e mrc para marca
+        if (tab == null) throw new Exception("Tabuleiro não pode ser nulo");
+        if (mrc == null) throw new Exception("Marca não pode ser nula");
+        this.tabDoJogo = tab;
+        this.marca     = mrc;
     }
 
     public Marca getMarca ()
     {
-        // retorna a marca do jogador
+        return this.marca;
     }
 
     public void facaSuaJogada ()
     {
-        // pergunta para o jogador onde ele quer
-        // jogar, permitindo digitacao e chamando
-        // os métodos apropriados de tabDoJogo
+        boolean jogou = false;
+        while (!jogou)
+        {
+            try
+            {
+                System.out.println(tabDoJogo.toString());
+                System.out.print("Linha (0-2): ");
+                int lin = Integer.parseInt(teclado.readLine().trim());
+                System.out.print("Coluna (0-2): ");
+                int col = Integer.parseInt(teclado.readLine().trim());
+
+                if (tabDoJogo.haMarcaNaPosicao(lin, col)) {
+                    System.out.println("Posição já ocupada!");
+                    continue;
+                }
+                tabDoJogo.setMarcaNaPosicao(this.marca, lin, col);
+                jogou = true;
+            }
+            catch (Exception e) {
+                System.out.println("Entrada inválida. Tente novamente.");
+            }
+        }
     }
 
-    public void vcGanhou ()
-    {
-        // mostra mensagem indicando vitoria
-    }
-
-    public void vcPerdeu ()
-    {
-        // mostra mensagem indicando derrota
-    }
-
-    public void deuVelha ()
-    {
-        // mostra mensagem indicando empate
-    }
+    public void vcGanhou () { System.out.println("Você ganhou!"); }
+    public void vcPerdeu () { System.out.println("Você perdeu!"); }
+    public void deuVelha () { System.out.println("Deu velha! Empate."); }
 
     public boolean querMaisUmaPartida ()
     {
-        // perguntar se deseja jogar de novo
-        // permitindo digitacao e retornando
-        // true ou false, conforme a resposta
+        try
+        {
+            System.out.print("Jogar novamente? (s/n): ");
+            String r = teclado.readLine().trim().toLowerCase();
+            return r.startsWith("s");
+        }
+        catch (Exception e) { return false; }
     }
 
     @Override
     public String toString ()
     {
-        // faça
+        return "JogadorHumano[" + marca + "]";
     }
 
     @Override
     public boolean equals (Object obj)
     {
-        // faça
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        JogadorHumano outro = (JogadorHumano) obj;
+        return Objects.equals(this.marca, outro.marca)
+            && Objects.equals(this.tabDoJogo, outro.tabDoJogo);
     }
 
     @Override
     public int hashCode ()
     {
-        // faça
+        return Objects.hash(this.marca, this.tabDoJogo);
     }
 
-    // construtor de cópia
     public JogadorHumano (JogadorHumano modelo) throws Exception
-
     {
-        // faça
+        if (modelo == null) throw new Exception("Modelo não pode ser nulo");
+        this.marca = (modelo.marca != null)
+            ? new Marca(modelo.marca.getSimbolo()) : null;
+        this.tabDoJogo = (modelo.tabDoJogo != null)
+            ? new Tabuleiro(modelo.tabDoJogo) : null;
+        this.teclado = new BufferedReader(new InputStreamReader(System.in));
     }
 
     @Override
     public Object clone ()
     {
-        // faça
+        try { return new JogadorHumano(this); }
+        catch (Exception e) { return null; }
     }
 }
