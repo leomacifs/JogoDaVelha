@@ -1,65 +1,95 @@
 package jogo;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Tabuleiro implements Cloneable
 {
-    // a principio, toda igual a null
-    private Marca matriz [][];
+    private Marca matriz[][];
 
     public Tabuleiro ()
     {
-        this.matriz = new Marca [3][3];
+        this.matriz = new Marca[3][3];
+    }
+
+    private void validaPosicao (int lin, int col) throws Exception
+    {
+        if (lin < 0 || lin > 2 || col < 0 || col > 2)
+            throw new Exception("Posição inválida: [" + lin + "][" + col + "]");
     }
 
     public boolean haMarcaNaPosicao (int lin, int col) throws Exception
     {
-        // verifico se em matriz[lin][col]
-        // tem null, retornando false em caso
-        // afirmativo, ou true em caso negativo
-        // dar excecao caso lin ou col invalido
+        validaPosicao(lin, col);
+        return this.matriz[lin][col] != null;
     }
 
     public Marca getMarcaNaPosicao (int lin, int col) throws Exception
     {
-        // retornar a marca que tem em
-        // matriz[lin][col]
-        // dar excecao caso lin ou col invalido
+        validaPosicao(lin, col);
+        return this.matriz[lin][col];
     }
 
     public void setMarcaNaPosicao (Marca mrc, int lin, int col) throws Exception
     {
-        // colocar mrc em matriz[lin][col],
-        // dar excecao caso lin ou col invalido
-        // dar excecao caso mrc seja null
+        validaPosicao(lin, col);
+        if (mrc == null)
+            throw new Exception("Marca não pode ser nula");
+        if (this.matriz[lin][col] != null)
+            throw new Exception("Posição já ocupada");
+        this.matriz[lin][col] = mrc;
     }
 
     @Override
     public String toString ()
     {
-        // retornar em um String o tabuleiro
-        // formatado para ser exibido na tela
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                sb.append(this.matriz[i][j] == null ? " " : this.matriz[i][j].toString());
+                if (j < 2) sb.append(" | ");
+            }
+            sb.append("\n");
+            if (i < 2) sb.append("---------\n");
+        }
+        return sb.toString();
     }
 
     @Override
     public boolean equals (Object obj)
     {
-        // retornar true se this for igual a obj ou false caso contrario
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        Tabuleiro outro = (Tabuleiro) obj;
+        return Arrays.deepEquals(this.matriz, outro.matriz);
     }
 
     @Override
     public int hashCode ()
     {
-        // faça
+        return Arrays.deepHashCode(this.matriz);
     }
 
-    // construtor de copia
     public Tabuleiro (Tabuleiro modelo) throws Exception
     {
-        // faça
+        if (modelo == null)
+            throw new Exception("Modelo não pode ser nulo");
+        this.matriz = new Marca[3][3];
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if (modelo.matriz[i][j] != null)
+                    this.matriz[i][j] = new Marca(modelo.matriz[i][j].getSimbolo());
     }
 
     @Override
     public Object clone ()
     {
-        // faça
+        try {
+            return new Tabuleiro(this);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
