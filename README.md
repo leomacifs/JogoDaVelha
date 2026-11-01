@@ -201,18 +201,18 @@ comportamento é o mesmo, mas o código é **legível, testável e extensível**
 ## 📁 Estrutura do projeto
 
 ```
-.
-├── Velha.java                    ← Classe main (raiz do código)
+JogoDaVelha/
+├── Velha.java
 ├── README.md
-└── src/                          ← (equivalente ao classpath)
+├── src/
+│   ├── jogo/
+│   └── jogador/
+└── out/                    ← TUDO compilado aqui dentro
+    ├── Velha.class
     ├── jogo/
-    │   ├── Marca.java
-    │   ├── Tabuleiro.java
-    │   └── AnalistaSituacional.java
+    │   └── *.class
     └── jogador/
-        ├── Jogador.java          ← interface
-        ├── JogadorHumano.java
-        └── JogadorAutomatico.java
+        └── *.class
 ```
 
 > ⚠️ Os arquivos `.java` de `jogo` e `jogador` **devem** estar dentro de pastas com
@@ -232,10 +232,10 @@ Na **raiz do projeto** (onde está o `Velha.java`):
 
 ```bash
 # 1. Compilar
-javac Velha.java jogo/*.java jogador/*.java
+javac -d out -sourcepath src Velha.java
 
 # 2. Executar
-java Velha
+java -cp out Velha
 ```
 
 ### Via IDE
