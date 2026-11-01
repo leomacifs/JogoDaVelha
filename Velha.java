@@ -55,18 +55,23 @@ public class Velha
                 }
                 while (!analista.fimDeJogo());
 
-                if (analista.getMarcaDoVencedor().equals(jogadorH.getMarca()))
-                    jogadorH.vcGanhou ();
+                //FIX: armazena o vencedor numa variável ANTES de chamar .equals()
+                Marca vencedor = analista.getMarcaDoVencedor();
+
+                if (vencedor == null)
+                    jogadorH.deuVelha ();          // empate
+                else if (vencedor.equals(jogadorH.getMarca()))
+                    jogadorH.vcGanhou ();          // humano venceu
                 else
-                    if (analista.getMarcaDoVencedor().equals(jogadorA.getMarca()))
-                        jogadorH.vcPerdeu ();
-                    else
-                        jogadorH.deuVelha ();
+                    jogadorH.vcPerdeu ();          // IA venceu
 
                 jogadorHumanoComeca = !jogadorHumanoComeca;
             }
             catch (Exception e)
-            {}
+            {
+                //FIX: não engolir exceção silenciosamente
+                System.out.println ("Erro inesperado: " + e.getMessage ());
+            }
         }
         while (jogadorH.querMaisUmaPartida());
     }

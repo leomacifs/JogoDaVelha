@@ -1,4 +1,4 @@
-﻿package jogador;
+package jogador;
 
 import jogo.Marca;
 import jogo.Tabuleiro;
@@ -12,6 +12,8 @@ public class JogadorHumano implements Jogador, Cloneable
     private BufferedReader teclado   = new BufferedReader
                                         (new InputStreamReader (System.in));
 
+    // =================== CONSTRUTORES ===================
+
     public JogadorHumano (Tabuleiro tab) throws Exception
     {
         if (tab == null) throw new Exception("Tabuleiro não pode ser nulo");
@@ -19,9 +21,9 @@ public class JogadorHumano implements Jogador, Cloneable
 
         System.out.print("Escolha sua marca (X/O): ");
         String entrada = teclado.readLine();
-        if (entrada == null || entrada.isEmpty())
+        if (entrada == null || entrada.trim().isEmpty())
             throw new Exception("Nenhuma marca digitada");
-        this.marca = new Marca(Character.toUpperCase(entrada.charAt(0)));
+        this.marca = new Marca(Character.toUpperCase(entrada.trim().charAt(0)));
     }
 
     public JogadorHumano (Tabuleiro tab, Marca mrc) throws Exception
@@ -31,6 +33,8 @@ public class JogadorHumano implements Jogador, Cloneable
         this.tabDoJogo = tab;
         this.marca     = mrc;
     }
+
+    // =================== CONTRATO Jogador ===================
 
     public Marca getMarca ()
     {
@@ -45,10 +49,9 @@ public class JogadorHumano implements Jogador, Cloneable
             try
             {
                 System.out.println(tabDoJogo.toString());
-                System.out.print("Linha (0-2): ");
-                int lin = Integer.parseInt(teclado.readLine().trim());
-                System.out.print("Coluna (0-2): ");
-                int col = Integer.parseInt(teclado.readLine().trim());
+
+                int lin = leDigito("Linha (0-2): ");
+                int col = leDigito("Coluna (0-2): ");
 
                 if (tabDoJogo.haMarcaNaPosicao(lin, col)) {
                     System.out.println("Posição já ocupada!");
@@ -63,20 +66,99 @@ public class JogadorHumano implements Jogador, Cloneable
         }
     }
 
+    /**
+     * Lê EXATAMENTE um dígito (0, 1 ou 2). Rejeita:
+     *  - strings vazias ("")
+     *  - strings com mais de 1 caractere ("00", "002", "000001")
+     *  - caracteres não numéricos ("a", "x", "-1")
+     *  - dígitos fora do intervalo 0-2 ("3", "9")
+     */
+    private int leDigito (String prompt) throws Exception
+    {
+        System.out.print(prompt);
+        String entrada = teclado.readLine();
+
+        if (entrada == null)
+            throw new Exception("Nenhum caractere digitado");
+
+        String s = entrada.trim();
+
+        if (s.isEmpty())
+            throw new Exception("Nenhum caractere digitado");
+
+        if (s.length() != 1)
+            throw new Exception("Digite APENAS um caractere (0, 1 ou 2)");
+
+        char c = s.charAt(0);
+        if (c < '0' || c > '2')
+            throw new Exception("Apenas 0, 1 ou 2 são aceitos");
+
+        return c - '0';   // '0'→0, '1'→1, '2'→2
+    }
+
+    // =================== MENSAGENS DE FIM DE JOGO ===================
+
     public void vcGanhou () { System.out.println("Você ganhou!"); }
     public void vcPerdeu () { System.out.println("Você perdeu!"); }
     public void deuVelha () { System.out.println("Deu velha! Empate."); }
 
+    // =================== REPETIÇÃO DE PARTIDA ===================
+
+    /**
+     * Pergunta se o jogador quer jogar novamente. Aceita EXATAMENTE:
+     *  - 's' ou 'S'  → true
+     *  - 'n' ou 'N'  → false
+     * Qualquer outra entrada (inclusive "sim", "nao", "não", "ssss", "")
+     * é rejeitada e a pergunta é repetida.
+     */
     public boolean querMaisUmaPartida ()
     {
-        try
+        while (true)
         {
-            System.out.print("Jogar novamente? (s/n): ");
-            String r = teclado.readLine().trim().toLowerCase();
-            return r.startsWith("s");
+            try
+            {
+                char c = leSimNao("Jogar novamente? (s/n): ");
+
+                if (c == 's') return true;
+                if (c == 'n') return false;
+            }
+            catch (Exception e)
+            {
+                System.out.println("Resposta inválida. Digite apenas 's' (sim) ou 'n' (não).");
+            }
         }
-        catch (Exception e) { return false; }
     }
+
+    /**
+     * Lê EXATAMENTE um caractere e o devolve em minúsculo.
+     * Aceita somente 's', 'S', 'n' ou 'N'.
+     * Lança exceção para qualquer outra coisa.
+     */
+    private char leSimNao (String prompt) throws Exception
+    {
+        System.out.print(prompt);
+        String entrada = teclado.readLine();
+
+        if (entrada == null)
+            throw new Exception("Nenhum caractere digitado");
+
+        String s = entrada.trim();
+
+        if (s.isEmpty())
+            throw new Exception("Nenhum caractere digitado");
+
+        if (s.length() != 1)
+            throw new Exception("Digite APENAS um caractere (s ou n)");
+
+        char c = Character.toLowerCase(s.charAt(0));
+
+        if (c != 's' && c != 'n')
+            throw new Exception("Apenas 's' ou 'n' são aceitos");
+
+        return c;
+    }
+
+    // =================== OBJECT ===================
 
     @Override
     public String toString ()
@@ -99,6 +181,8 @@ public class JogadorHumano implements Jogador, Cloneable
     {
         return Objects.hash(this.marca, this.tabDoJogo);
     }
+
+    // =================== CÓPIA ===================
 
     public JogadorHumano (JogadorHumano modelo) throws Exception
     {
